@@ -1,200 +1,946 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
-<title>VAR & Physique</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAR & Physique — Colloque Scientifique</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;1,300&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════ */
+:root {
+  --red:    #E8232A;
+  --gold:   #D4A843;
+  --dark:   #0d0d0d;
+  --mid:    #161616;
+  --light:  #f2efe9;
+  --gray:   #7a7a7a;
+  --border: rgba(255,255,255,0.07);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--dark);
+  color: var(--light);
+  font-family: 'Barlow Condensed', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+a { text-decoration: none; color: inherit; }
 
-body{
-font-family:Arial;
-margin:0;
-background:#0f172a;
-color:white;
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 48px; height: 56px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(13,13,13,0.88);
+  backdrop-filter: blur(16px);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 4px;
+}
+.nav-logo em { color: var(--red); font-style: normal; }
+.nav-links { display: flex; gap: 36px; }
+.nav-links a {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gray); transition: color .2s;
+}
+.nav-links a:hover { color: var(--light); }
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  padding: 140px 80px 180px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* Subtle grid background */
+#hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+/* Red glow */
+#hero::after {
+  content: '';
+  position: absolute; top: 20%; left: -10%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(232,35,42,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gray); margin-bottom: 28px;
+}
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 13vw, 160px);
+  line-height: .88; letter-spacing: 1px;
+  position: relative; z-index: 1;
+}
+.hero-title .l1 { color: rgba(242,239,233,.18); display: block; }
+.hero-title .l2 { color: rgba(242,239,233,.42); display: block; }
+.hero-title .l3 { color: var(--red); display: block; }
+.hero-sub {
+  font-style: italic; font-weight: 300;
+  font-size: 17px; color: var(--gold);
+  max-width: 500px; line-height: 1.5;
+  margin-top: 36px; position: relative; z-index: 1;
+}
+.hero-scroll {
+  margin-top: 52px; display: inline-flex; align-items: center; gap: 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gray); transition: color .2s; cursor: pointer;
+  position: relative; z-index: 1;
+}
+.hero-scroll:hover { color: var(--light); }
+.hero-scroll .arr { animation: bob 1.6s ease-in-out infinite; display: inline-block; }
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
+
+.stats-row {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--border);
+}
+.stat {
+  padding: 28px 36px;
+  border-right: 1px solid var(--border);
+}
+.stat:last-child { border-right: none; }
+.stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px; line-height: 1; color: var(--red);
+}
+.stat-val sup { font-size: 20px; }
+.stat-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gray); margin-top: 5px;
 }
 
-header{
-background:black;
-padding:30px;
-text-align:center;
+/* ══════════════════════════════════════
+   SECTION SHELL
+══════════════════════════════════════ */
+.section {
+  padding: 96px 80px;
+  border-top: 1px solid var(--border);
+}
+.section.alt { background: var(--mid); }
+.s-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--gray); margin-bottom: 14px;
+}
+.s-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(44px, 6vw, 76px);
+  line-height: .92; margin-bottom: 12px;
+}
+.s-sub {
+  font-style: italic; font-weight: 300;
+  font-size: 17px; color: var(--gold); margin-bottom: 56px;
 }
 
-nav a{
-margin:20px;
-color:#38bdf8;
-text-decoration:none;
-font-size:18px;
+/* ══════════════════════════════════════
+   01 HISTOIRE
+══════════════════════════════════════ */
+.hist-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+}
+.block-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 2px; color: var(--red);
+  margin-bottom: 14px; margin-top: 36px;
+}
+.block-title:first-child { margin-top: 0; }
+p.body-text {
+  font-size: 15px; font-weight: 300; line-height: 1.75;
+  color: rgba(242,239,233,.65); margin-bottom: 14px;
 }
 
-.hero{
-text-align:center;
-padding:80px;
+/* Timeline */
+.tl-item {
+  display: grid; grid-template-columns: 90px 1fr;
+  gap: 20px; padding: 26px 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0; transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.tl-item.vis { opacity: 1; transform: none; }
+.tl-yr {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--red);
+  padding-top: 2px;
+}
+.tl-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--red); flex-shrink: 0; margin-top: 5px;
+}
+.tl-h {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px; font-weight: 600; margin-bottom: 5px;
+}
+.tl-p { font-size: 13px; color: rgba(242,239,233,.5); line-height: 1.6; font-weight: 300; }
+
+/* ══════════════════════════════════════
+   02 SIMULATEUR
+══════════════════════════════════════ */
+.sim-wrap {
+  border: 1px solid var(--border); border-radius: 1px; overflow: hidden;
+}
+.sim-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,.02); flex-wrap: wrap;
+}
+.sim-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 7px 14px; border: 1px solid var(--border);
+  background: transparent; color: var(--light); cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.sim-btn:hover { border-color: var(--red); color: var(--red); }
+.sim-hint {
+  margin-left: auto;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; color: var(--gray);
+}
+#pitch { display: block; width: 100%; cursor: grab; }
+#pitch:active { cursor: grabbing; }
+.sim-legend {
+  display: flex; gap: 20px; padding: 10px 18px;
+  border-top: 1px solid var(--border); flex-wrap: wrap;
+}
+.leg-item {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--gray);
+}
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; }
+.leg-line { width: 14px; height: 2px; border-radius: 1px; }
+.sim-result {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--border);
+}
+.res-verdict {
+  padding: 18px 24px;
+  border-right: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  transition: border-color .3s, background .3s;
+}
+.res-verdict.on  { border-left-color: #2ecc71; background: rgba(46,204,113,.05); }
+.res-verdict.off { border-left-color: var(--red); background: rgba(232,35,42,.05); }
+.res-status {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 2px; transition: color .3s;
+}
+.res-status.on  { color: #2ecc71; }
+.res-status.off { color: var(--red); }
+.res-margin {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; color: var(--gray); margin-top: 4px;
+}
+.res-rule {
+  padding: 18px 24px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; line-height: 1.7;
+  color: rgba(242,239,233,.3);
+}
+.res-rule em { color: var(--gold); font-style: normal; }
+
+/* ══════════════════════════════════════
+   03 PHYSIQUE
+══════════════════════════════════════ */
+.phys-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+}
+.phys-card {
+  padding: 36px 28px; border: 1px solid var(--border);
+  transition: background .3s;
+}
+.phys-card:hover { background: rgba(255,255,255,.025); }
+.phys-icon { font-size: 26px; margin-bottom: 18px; }
+.phys-t {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px; letter-spacing: 1px; margin-bottom: 10px;
+}
+.phys-d {
+  font-size: 14px; font-weight: 300; line-height: 1.7;
+  color: rgba(242,239,233,.55); margin-bottom: 18px;
+}
+.formula {
+  background: rgba(232,35,42,.06);
+  border: 1px solid rgba(232,35,42,.18);
+  padding: 14px 16px;
+  font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.8;
+}
+.formula .flbl {
+  font-size: 8px; letter-spacing: 2px; color: var(--red);
+  text-transform: uppercase; display: block; margin-bottom: 6px;
+}
+.formula .feq  { color: var(--light); }
+.formula .fcmt { color: rgba(242,239,233,.3); }
+.tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.tag {
+  font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; padding: 4px 10px;
+  border: 1px solid rgba(212,168,67,.3); color: var(--gold);
 }
 
-.stats{
-display:flex;
-justify-content:center;
-gap:60px;
-margin-top:40px;
+/* ══════════════════════════════════════
+   04 CAMERAS
+══════════════════════════════════════ */
+.cam-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+}
+.cam-card {
+  background: var(--dark); padding: 32px 26px;
+  position: relative; overflow: hidden;
+  transition: background .25s;
+}
+.cam-card:hover { background: var(--mid); }
+.cam-num {
+  font-family: 'Bebas Neue', sans-serif; font-size: 80px;
+  color: rgba(242,239,233,.05); line-height: 1;
+  position: absolute; right: 12px; top: 10px;
+}
+.cam-t {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 21px; letter-spacing: 1px; margin-bottom: 5px;
+}
+.cam-spec {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; color: var(--red); letter-spacing: 2px; margin-bottom: 12px;
+}
+.cam-d {
+  font-size: 13px; font-weight: 300; line-height: 1.65;
+  color: rgba(242,239,233,.5);
 }
 
-.stat{
-font-size:30px;
+/* ══════════════════════════════════════
+   05 ALGORITHMES
+══════════════════════════════════════ */
+.algo-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 2px;
+}
+.algo-card {
+  border: 1px solid var(--border); padding: 30px 28px;
+}
+.algo-t {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px; letter-spacing: 1px; margin-bottom: 5px;
+}
+.algo-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; color: var(--red); letter-spacing: 2px; margin-bottom: 14px;
+}
+.algo-d {
+  font-size: 14px; font-weight: 300; line-height: 1.7;
+  color: rgba(242,239,233,.55); margin-bottom: 16px;
+}
+.code {
+  background: #080808; border: 1px solid rgba(255,255,255,.05);
+  padding: 14px 16px;
+  font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1.9;
+  overflow-x: auto; white-space: pre;
+}
+.kw  { color: var(--red); }
+.fn  { color: var(--gold); }
+.vr  { color: #7ec8e3; }
+.cm  { color: rgba(242,239,233,.25); }
+
+/* Pro / con */
+.procon-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+}
+.procon-col { padding: 30px 28px; border: 1px solid var(--border); }
+.procon-h {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 2px; margin-bottom: 26px;
+}
+.procon-h.pro { color: #2ecc71; }
+.procon-h.con { color: var(--red); }
+.pc-item {
+  display: flex; gap: 12px; padding-bottom: 18px; margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.pc-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.pc-ico { font-size: 15px; flex-shrink: 0; padding-top: 2px; }
+.pc-txt {
+  font-size: 14px; font-weight: 300; line-height: 1.65;
+  color: rgba(242,239,233,.6);
+}
+.pc-txt strong { color: var(--light); font-weight: 600; }
+
+/* ══════════════════════════════════════
+   GLOSSAIRE
+══════════════════════════════════════ */
+.gloss-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 1px; background: var(--border);
+}
+.gloss-item {
+  background: var(--mid); padding: 26px 30px;
+  transition: background .2s;
+}
+.gloss-item:hover { background: rgba(255,255,255,.03); }
+.gloss-t {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; color: var(--red); letter-spacing: 2px; margin-bottom: 7px;
+}
+.gloss-d {
+  font-size: 14px; font-weight: 300; line-height: 1.65;
+  color: rgba(242,239,233,.55);
 }
 
-section{
-padding:60px;
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+  padding: 36px 80px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; flex-wrap: wrap;
+}
+.foot-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 4px;
+}
+.foot-logo em { color: var(--red); font-style: normal; }
+.foot-copy {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; color: var(--gray);
 }
 
-canvas{
-background:#15803d;
-border:4px solid white;
-display:block;
-margin:auto;
+/* ══════════════════════════════════════
+   REVEAL
+══════════════════════════════════════ */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .65s ease, transform .65s ease;
 }
+.reveal.vis { opacity: 1; transform: none; }
 
-button{
-padding:10px 20px;
-margin:20px;
-font-size:16px;
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 900px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .section { padding: 60px 24px; }
+  #hero { padding: 120px 24px 220px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .hist-grid, .phys-grid, .cam-grid, .algo-grid, .procon-grid, .gloss-grid {
+    grid-template-columns: 1fr;
+  }
+  .sim-result { grid-template-columns: 1fr; }
+  .res-verdict { border-right: none; }
+  footer { flex-direction: column; padding: 32px 24px; text-align: center; }
 }
-
 </style>
-
 </head>
-
 <body>
 
-<header>
-
-<h1>VAR & Physique</h1>
-
-<p>Quand la physique arbitre le football</p>
-
+<!-- ──────────────── NAV ──────────────── -->
 <nav>
-
-<a href="#simulateur">Simulation</a>
-<a href="#physique">Physique</a>
-<a href="#cameras">Caméras</a>
-
+  <div class="nav-logo"><em>VAR</em> &amp; PHYSIQUE</div>
+  <div class="nav-links">
+    <a href="#histoire">01 Contexte</a>
+    <a href="#simulateur">02 Simulateur</a>
+    <a href="#physique">03 Physique</a>
+    <a href="#cameras">04 Optique</a>
+    <a href="#algorithmes">05 Algorithmes</a>
+    <a href="#glossaire">Glossaire</a>
+  </div>
 </nav>
 
-</header>
+<!-- ──────────────── HERO ──────────────── -->
+<section id="hero">
+  <div class="hero-eyebrow">Colloque Scientifique — Mesures Physiques</div>
+  <div class="hero-title">
+    <span class="l1">VIDEO</span>
+    <span class="l2">ASSISTANT</span>
+    <span class="l3">REFEREE</span>
+  </div>
+  <p class="hero-sub">De la trajectoire balistique du ballon à l'incertitude de mesure subcentimétrique — la science exacte derrière l'arbitrage vidéo.</p>
+  <a href="#histoire" class="hero-scroll">Explorer <span class="arr">↓</span></a>
 
-<div class="hero">
-
-<h2>Mesures Physiques dans le Football Moderne</h2>
-
-<div class="stats">
-
-<div class="stat">
-8+ <br>Caméras VAR
-</div>
-
-<div class="stat">
-500 fps <br>Haute vitesse
-</div>
-
-<div class="stat">
-±1.1 cm <br>Précision SAOT
-</div>
-
-<div class="stat">
-29 <br>Points anatomiques
-</div>
-
-</div>
-
-</div>
-
-<section id="simulateur">
-
-<h2 style="text-align:center">Simulateur de Hors-Jeu</h2>
-
-<canvas id="terrain" width="900" height="400"></canvas>
-
-<div style="text-align:center">
-
-<button onclick="reset()">Reset</button>
-<button onclick="random()">Random</button>
-
-</div>
-
-<h3 id="result" style="text-align:center"></h3>
-
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-val">8<sup>+</sup></div>
+      <div class="stat-lbl">Caméras dédiées VAR</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">500<sup>fps</sup></div>
+      <div class="stat-lbl">Haute vitesse</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">±1.1<sup>cm</sup></div>
+      <div class="stat-lbl">Précision SAOT</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">29</div>
+      <div class="stat-lbl">Points anatomiques</div>
+    </div>
+  </div>
 </section>
 
+<!-- ──────────────── 01 HISTOIRE ──────────────── -->
+<section id="histoire" class="section">
+  <div class="s-tag">01 — Contexte</div>
+  <div class="s-title">HISTOIRE &amp;<br>GENÈSE DE LA VAR</div>
+  <div class="s-sub">D'un rêve technologique à une révolution arbitrale mondiale</div>
+
+  <div class="hist-grid">
+    <div>
+      <div class="block-title reveal">Pourquoi la VAR était inévitable</div>
+      <p class="body-text reveal">Depuis les origines du football, les erreurs arbitrales ont rythmé les grandes compétitions. Le « but fantôme » de Wembley en 1966, la « main de Dieu » de Maradona en 1986, ou encore les décisions litigieuses lors du Mondial 2010 ont cristallisé un besoin croissant : disposer d'un outil de vérification fiable et objectif.</p>
+      <p class="body-text reveal">La technologie vidéo est entrée progressivement dans les sports : le cricket avec le Hawk-Eye dès 2001, le tennis avec l'Electronic Line Calling, le rugby avec le Television Match Official. Le football, conservateur par tradition, a résisté jusqu'à ce que les enjeux financiers et médiatiques rendent l'erreur arbitrale intolérable.</p>
+      <p class="body-text reveal">En 2012, la FIFA lance le projet VAR en partenariat avec l'IFAB. Après quatre années d'expérimentation en Eredivisie, A-League et MLS, la VAR est officiellement approuvée le 3 mars 2018 — son baptême du feu mondial à la Coupe du Monde en Russie.</p>
+      <div class="block-title reveal" style="margin-top:40px">Le cadre réglementaire IFAB</div>
+      <p class="body-text reveal">L'IFAB définit 4 catégories d'incidents vérifiables : les buts, les pénaltys, les cartons rouges directs et les erreurs d'identité. Toute autre décision est hors périmètre, créant des zones grises encore débattues.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-yr"><div class="tl-dot"></div>2010</div><div><div class="tl-h">Catalyseur — Mondial Afrique du Sud</div><div class="tl-p">Le but refusé à Lampard contre l'Allemagne accélère la réflexion sur l'assistance vidéo au plus haut niveau.</div></div></div>
+      <div class="tl-item"><div class="tl-yr"><div class="tl-dot"></div>2012</div><div><div class="tl-h">Lancement du projet FIFA/IFAB</div><div class="tl-p">Création du groupe de travail officiel. Premiers tests lors de matchs amicaux internationaux.</div></div></div>
+      <div class="tl-item"><div class="tl-yr"><div class="tl-dot"></div>2016</div><div><div class="tl-h">Expérimentations officielles</div><div class="tl-p">Eredivisie, A-League, MLS — premières données statistiques récoltées sur 3 continents.</div></div></div>
+      <div class="tl-item"><div class="tl-yr"><div class="tl-dot"></div>2018</div><div><div class="tl-h">Approbation IFAB &amp; Coupe du Monde</div><div class="tl-p">335 VAR checks en Russie pour 19 décisions modifiées (5.7 %). Premier pénalty VAR de l'histoire.</div></div></div>
+      <div class="tl-item"><div class="tl-yr"><div class="tl-dot"></div>2020</div><div><div class="tl-h">Semi-Automated Offside (SAOT)</div><div class="tl-p">Hors-jeu semi-automatisé par IA. Temps de décision divisé par 3 : 70 s → 25 s.</div></div></div>
+      <div class="tl-item"><div class="tl-yr"><div class="tl-dot"></div>2022</div><div><div class="tl-h">Mondiale Qatar — SAOT intégral</div><div class="tl-p">29 points anatomiques tracés en temps réel. Puce IMU 500 Hz dans le ballon Al Rihla.</div></div></div>
+      <div class="tl-item"><div class="tl-yr"><div class="tl-dot"></div>2024+</div><div><div class="tl-h">Jumeaux numériques &amp; IA générative</div><div class="tl-p">Reconstruction volumétrique 3D temps réel et rendu sous angles virtuels arbitraires.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── 02 SIMULATEUR ──────────────── -->
+<section id="simulateur" class="section alt">
+  <div class="s-tag">02 — Interactif</div>
+  <div class="s-title">SIMULATEUR<br>DE HORS-JEU</div>
+  <div class="s-sub">Déplacez les joueurs et observez la décision en temps réel</div>
+
+  <div class="sim-wrap reveal">
+    <div class="sim-bar">
+      <button class="sim-btn" onclick="resetPos()">↺ Réinitialiser</button>
+      <button class="sim-btn" onclick="randPos()">⚄ Aléatoire</button>
+      <span class="sim-hint">✥ Cliquez-glissez un joueur</span>
+    </div>
+    <canvas id="pitch" height="370"></canvas>
+    <div class="sim-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#5b9bd5"></div>Défenseurs</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e8232a"></div>Attaquant</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f0a500"></div>Passeur</div>
+      <div class="leg-item"><div class="leg-line" style="background:#00ff9f"></div>Ligne hors-jeu</div>
+    </div>
+    <div class="sim-result">
+      <div id="res-box" class="res-verdict on">
+        <div id="res-st" class="res-status on">✓ En jeu</div>
+        <div id="res-mg" class="res-margin">Marge : — cm</div>
+      </div>
+      <div class="res-rule">
+        <em>Règle IFAB</em> : x<sub>att</sub> ≤ min(x<sub>D1</sub>, x<sub>D2</sub>)<br>
+        u<sub>total</sub> = √(0.4²+0.8²+0.3²+0.6²) ≈ <em>±1.1 cm</em>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── 03 PHYSIQUE ──────────────── -->
+<section id="physique" class="section">
+  <div class="s-tag">03 — Physique</div>
+  <div class="s-title">MESURES<br>PHYSIQUES CLÉS</div>
+  <div class="s-sub">Les grandeurs et équations au cœur des décisions</div>
+
+  <div class="phys-grid">
+    <div class="phys-card reveal">
+      <div class="phys-icon">📐</div>
+      <div class="phys-t">Position &amp; Hors-Jeu</div>
+      <p class="phys-d">Le SAOT compare le membre attaquant le plus avancé à la position du 2e défenseur, au moment précis du dernier contact du passeur avec le ballon.</p>
+      <div class="formula">
+        <span class="flbl">Condition de hors-jeu (IFAB)</span>
+        <div class="feq">x<sub>att</sub> &gt; min(x<sub>D1</sub>, x<sub>D2</sub>)</div>
+        <div class="fcmt">Précision SAOT : ±1.1 cm<br>Pour Δx &lt; 2.2 cm → zone IC 95%</div>
+      </div>
+      <div class="tags"><span class="tag">SAOT</span><span class="tag">12 Cams</span><span class="tag">50 fps</span></div>
+    </div>
+
+    <div class="phys-card reveal">
+      <div class="phys-icon">⚽</div>
+      <div class="phys-t">Trajectoire Balistique</div>
+      <p class="phys-d">Le ballon subit gravitation, traînée aérodynamique et effet Magnus. La puce IMU embarquée à 500 Hz mesure position et état rotationnel exact.</p>
+      <div class="formula">
+        <span class="flbl">Traînée + Effet Magnus</span>
+        <div class="feq">F<sub>D</sub> = ½ρC<sub>D</sub>Av²</div>
+        <div class="fcmt">C<sub>D</sub> ≈ 0.2 · Re ≈ 2.4×10⁵ à 30 m/s<br>→ régime turbulent critique</div>
+      </div>
+      <div class="tags"><span class="tag">IMU 500 Hz</span><span class="tag">Magnus</span></div>
+    </div>
+
+    <div class="phys-card reveal">
+      <div class="phys-icon">📊</div>
+      <div class="phys-t">Incertitude de Mesure</div>
+      <p class="phys-d">L'incertitude totale combine calibration caméra, IA de pose, synchronisation temporelle et définition anatomique — propagée selon la loi quadratique.</p>
+      <div class="formula">
+        <span class="flbl">Propagation quadratique</span>
+        <div class="feq">u<sub>tot</sub> = √(u₁²+u₂²+u₃²+u₄²)</div>
+        <div class="fcmt">±0.4 + ±0.8 + ±0.3 + ±0.6 cm<br>→ u<sub>tot</sub> ≈ ±1.1 cm</div>
+      </div>
+      <div class="tags"><span class="tag">Métrologie</span><span class="tag">IC 95%</span><span class="tag">±1.1 cm</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── 04 CAMERAS ──────────────── -->
+<section id="cameras" class="section alt">
+  <div class="s-tag">04 — Optique</div>
+  <div class="s-title">RÉSEAU DE<br>CAMÉRAS</div>
+  <div class="s-sub">L'infrastructure sensorielle qui capture la réalité du jeu</div>
+
+  <div class="cam-grid">
+    <div class="cam-card reveal"><div class="cam-num">01</div><div class="cam-t">Broadcast principale</div><div class="cam-spec">4K UHD · 50/60 fps</div><p class="cam-d">Flux principal de diffusion, base de l'analyse VAR générale. Capteur CMOS global shutter pour éviter le rolling shutter sur les mouvements rapides.</p></div>
+    <div class="cam-card reveal"><div class="cam-num">02</div><div class="cam-t">Super Slow-Motion</div><div class="cam-spec">1080p · 300–1000 fps</div><p class="cam-d">Dédiée aux contacts et fautes. À 500 fps, chaque frame = 2 ms — permet de mesurer la durée d'un contact ballon/pied (8–15 ms).</p></div>
+    <div class="cam-card reveal"><div class="cam-num">03</div><div class="cam-t">SAOT — Hors-jeu</div><div class="cam-spec">1080p · 50 fps · ×12</div><p class="cam-d">12 caméras en hauteur aux coins du stade. Angle optimal ≈ 90° pour maximiser la précision de triangulation sur toute la surface.</p></div>
+    <div class="cam-card reveal"><div class="cam-num">04</div><div class="cam-t">Goal-Line Technology</div><div class="cam-spec">720p · 500 fps · ×14</div><p class="cam-d">14 caméras par cage + 7 capteurs magnétiques. Décision en 500 ms avec certitude à 100 mm de franchissement de ligne.</p></div>
+    <div class="cam-card reveal"><div class="cam-num">05</div><div class="cam-t">Panoramique 360°</div><div class="cam-spec">8K · 30 fps</div><p class="cam-d">Reconstruction 3D dense par Multi-View Stereo. Base pour les futurs jumeaux numériques et le rendu sous angles virtuels arbitraires.</p></div>
+    <div class="cam-card reveal"><div class="cam-num">06</div><div class="cam-t">Synchronisation PTP</div><div class="cam-spec">IEEE 1588 · ±1 µs</div><p class="cam-d">Toutes les caméras synchronisées via Precision Time Protocol. Condition absolue de la cohérence temporelle de la fusion multi-capteurs.</p></div>
+  </div>
+</section>
+
+<!-- ──────────────── 05 ALGORITHMES ──────────────── -->
+<section id="algorithmes" class="section">
+  <div class="s-tag">05 — Algorithmes</div>
+  <div class="s-title">TRAITEMENT<br>&amp; IA</div>
+  <div class="s-sub">Du pixel à la décision — les étapes clés du pipeline</div>
+
+  <div class="algo-grid">
+    <div class="algo-card reveal">
+      <div class="algo-t">Suivi des Joueurs</div>
+      <div class="algo-sub">YOLO + DeepSORT + Filtre de Kalman</div>
+      <p class="algo-d">Détection temps réel (&lt;20 ms/frame), suivi multi-objets combinant prédiction cinématique (Kalman) et réidentification visuelle (ReID) — identité maintenue même après occlusion.</p>
+      <div class="code"><span class="cm">// Filtre de Kalman — prédiction position
+</span><span class="vr">state</span> = [x, y, vx, vy]
+<span class="vr">x̂</span> = <span class="fn">F</span> · x̂_prev    <span class="cm">// prédiction</span>
+<span class="vr">K</span> = P·Hᵀ·(H·P·Hᵀ+R)⁻¹  <span class="cm">// gain</span>
+<span class="vr">x̂</span> = x̂ + K·(z - H·x̂)  <span class="cm">// correction</span></div>
+    </div>
+
+    <div class="algo-card reveal">
+      <div class="algo-t">Pose Estimation 3D</div>
+      <div class="algo-sub">HRNet 2D → Triangulation SVD multi-vue</div>
+      <p class="algo-d">HRNet extrait 29 keypoints 2D par frame. La triangulation multi-vue (DLT) lève ces points en 3D par décomposition SVD — angle entre caméras ≈ 90° pour une précision optimale.</p>
+      <div class="code"><span class="cm">// Triangulation DLT — résolution SVD
+</span><span class="kw">pour</span> <span class="vr">chaque cam i</span> :
+  <span class="vr">xi</span> = <span class="vr">Pi</span> · <span class="fn">X</span>
+<span class="vr">A</span> = <span class="fn">build_matrix</span>(observations)
+[U,S,Vᵀ] = <span class="fn">svd</span>(A)
+<span class="vr">X</span> = Vᵀ[-1] / Vᵀ[-1][3]  <span class="cm">// normalisation</span></div>
+    </div>
+  </div>
+
+  <div class="procon-grid" style="margin-top:2px">
+    <div class="procon-col reveal">
+      <div class="procon-h pro">Arguments pour la VAR</div>
+      <div class="pc-item"><div class="pc-ico">✓</div><div class="pc-txt"><strong>Précision :</strong> Taux de correction des décisions passé de 82 % à 99 % selon la FIFA sur les 4 catégories couvertes.</div></div>
+      <div class="pc-item"><div class="pc-ico">✓</div><div class="pc-txt"><strong>Objectivité :</strong> Élimination des biais cognitifs et erreurs de parallaxe qui affectaient systématiquement les juges de ligne humains.</div></div>
+      <div class="pc-item"><div class="pc-ico">✓</div><div class="pc-txt"><strong>Dissuasion :</strong> Réduction des simulations en surface — les joueurs savent que chaque incident est analysé image par image.</div></div>
+    </div>
+    <div class="procon-col reveal">
+      <div class="procon-h con">Limites &amp; Critiques</div>
+      <div class="pc-item"><div class="pc-ico">✗</div><div class="pc-txt"><strong>Fausse certitude :</strong> Décider un hors-jeu à 1 cm dans une zone d'incertitude de ±1.1 cm crée une illusion de précision plus difficile à contester qu'une erreur humaine avouée.</div></div>
+      <div class="pc-item"><div class="pc-ico">✗</div><div class="pc-txt"><strong>Flux de jeu :</strong> Les vérifications longues (&gt;3 min) brisent le momentum émotionnel du match et dégradent l'expérience spectateur.</div></div>
+      <div class="pc-item"><div class="pc-ico">✗</div><div class="pc-txt"><strong>Inégalité :</strong> 600 k€ à 1 M€ par stade — inaccessible aux compétitions mineures, creusant un fossé technologique.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────── GLOSSAIRE ──────────────── -->
+<section id="glossaire" class="section alt">
+  <div class="s-tag">Glossaire Technique</div>
+  <div class="s-title">TERMES<br>CLÉS</div>
+  <div class="s-sub">Définitions des concepts scientifiques utilisés</div>
+
+  <div class="gloss-grid">
+    <div class="gloss-item reveal"><div class="gloss-t">SAOT</div><p class="gloss-d">Semi-Automated Offside Technology — 12 caméras + IA pour tracker 29 points anatomiques/joueur à 50 fps. Précision ±1.1 cm.</p></div>
+    <div class="gloss-item reveal"><div class="gloss-t">GLT</div><p class="gloss-d">Goal-Line Technology — 14 caméras haute vitesse + capteurs magnétiques. Décision en 500 ms sur franchissement de ligne.</p></div>
+    <div class="gloss-item reveal"><div class="gloss-t">IMU</div><p class="gloss-d">Inertial Measurement Unit — capteur embarqué (accéléromètre + gyroscope) dans le ballon Al Rihla, transmettant à 500 Hz.</p></div>
+    <div class="gloss-item reveal"><div class="gloss-t">Effet Magnus</div><p class="gloss-d">Force perpendiculaire au mouvement d'un projectile en rotation dans un fluide — cause les trajectoires courbées des tirs.</p></div>
+    <div class="gloss-item reveal"><div class="gloss-t">Pose Estimation</div><p class="gloss-d">Algorithme IA extrayant les positions articulaires d'un corps humain dans une image (keypoints 2D ou 3D).</p></div>
+    <div class="gloss-item reveal"><div class="gloss-t">DLT</div><p class="gloss-d">Direct Linear Transform — calibration caméra estimant la matrice de projection 3D→2D à partir de points de référence connus.</p></div>
+    <div class="gloss-item reveal"><div class="gloss-t">Filtre de Kalman</div><p class="gloss-d">Fusion prédiction cinématique + mesure pour estimer l'état d'un système dynamique bruité avec incertitude minimale.</p></div>
+    <div class="gloss-item reveal"><div class="gloss-t">PTP</div><p class="gloss-d">Precision Time Protocol — synchronisation d'horloges réseau à ±1 µs (IEEE 1588). Indispensable pour la fusion multi-caméras.</p></div>
+  </div>
+</section>
+
+<!-- ──────────────── FOOTER ──────────────── -->
+<footer>
+  <div class="foot-logo"><em>VAR</em> &amp; PHYSIQUE</div>
+  <div class="foot-copy">Colloque Scientifique — Mesures Physiques dans le Football Moderne</div>
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
 <script>
+/* ── Intersection Observer (reveal + timeline) ── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal, .tl-item').forEach(el => io.observe(el));
 
-const canvas = document.getElementById("terrain")
-const ctx = canvas.getContext("2d")
+/* ══════════════════════════════════════
+   SIMULATEUR DE HORS-JEU
+══════════════════════════════════════ */
+const canvas = document.getElementById('pitch');
+const ctx    = canvas.getContext('2d');
+let W, H;
 
-let players = [
-{x:250,y:200,type:"def"},
-{x:350,y:200,type:"def"},
-{x:600,y:200,type:"att"}
-]
+/* Players as fractions of [0..1] of the field rectangle */
+const P = {
+  gk:  { x:.08, y:.50, col:'#4a8bc8', label:'GK' },
+  d1:  { x:.63, y:.33, col:'#4a8bc8', label:'D1' },
+  d2:  { x:.63, y:.67, col:'#4a8bc8', label:'D2' },
+  att: { x:.61, y:.50, col:'#e8232a', label:'A1' },
+  pas: { x:.42, y:.56, col:'#d4a843', label:'P'  },
+};
 
-function draw(){
+const FIELD = { left:.06, right:.94, top:.06, bottom:.94 };
 
-ctx.clearRect(0,0,900,400)
+function fw(x) { return FIELD.left * W + x * (FIELD.right - FIELD.left) * W; }
+function fh(y) { return FIELD.top  * H + y * (FIELD.bottom - FIELD.top)  * H; }
+function px(p) { return fw(p.x); }
+function py(p) { return fh(p.y); }
 
-players.forEach(p=>{
+function offsideLine() { return Math.min(P.d1.x, P.d2.x); }
+function isOffside()   { return P.att.x > offsideLine() + 1e-6; }
 
-ctx.beginPath()
+function drawPitch() {
+  ctx.clearRect(0, 0, W, H);
 
-ctx.fillStyle = p.type==="att" ? "red" : "blue"
+  /* Background */
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#0c1a10');
+  bg.addColorStop(1, '#091409');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
 
-ctx.arc(p.x,p.y,12,0,Math.PI*2)
+  /* Grass stripes */
+  const nStripes = 8;
+  for (let i = 0; i < nStripes; i++) {
+    if (i % 2 === 0) {
+      ctx.fillStyle = 'rgba(255,255,255,.03)';
+      ctx.fillRect(i * W / nStripes, 0, W / nStripes, H);
+    }
+  }
 
-ctx.fill()
+  const lx = fw(0), rx = fw(1), ty = fh(0), by = fh(1);
+  const fw_ = rx - lx, fh_ = by - ty;
 
-})
+  ctx.strokeStyle = 'rgba(255,255,255,.28)';
+  ctx.lineWidth = 1;
 
-let line = Math.min(players[0].x,players[1].x)
+  /* Boundary */
+  ctx.strokeRect(lx, ty, fw_, fh_);
 
-ctx.beginPath()
-ctx.strokeStyle="yellow"
-ctx.moveTo(line,0)
-ctx.lineTo(line,400)
-ctx.stroke()
+  /* Centre line */
+  ctx.beginPath(); ctx.moveTo(lx + fw_/2, ty); ctx.lineTo(lx + fw_/2, by); ctx.stroke();
 
-let attacker = players[2]
+  /* Centre circle */
+  ctx.beginPath(); ctx.arc(lx + fw_/2, ty + fh_/2, fh_*.12, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(lx + fw_/2, ty + fh_/2, 3, 0, Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.fill();
 
-let result=document.getElementById("result")
+  /* Penalty areas */
+  const paW = fw_*.17, paH = fh_*.54, paY = ty + (fh_ - paH)/2;
+  ctx.strokeRect(lx,        paY, paW,  paH);
+  ctx.strokeRect(rx - paW,  paY, paW,  paH);
 
-if(attacker.x < line)
-result.innerHTML="✔ En jeu"
-else
-result.innerHTML="❌ Hors-jeu"
+  /* Goal areas */
+  const gaW = paW*.44, gaH = paH*.44, gaY = ty + (fh_ - gaH)/2;
+  ctx.strokeRect(lx,       gaY, gaW, gaH);
+  ctx.strokeRect(rx - gaW, gaY, gaW, gaH);
 
+  /* Goals */
+  const gW = fw_*.015, gH = fh_*.15, gY = ty + (fh_ - gH)/2;
+  ctx.strokeStyle = 'rgba(255,255,255,.5)';
+  ctx.strokeRect(lx - gW, gY, gW, gH);
+  ctx.strokeRect(rx,       gY, gW, gH);
+
+  /* Offside line */
+  const ox  = fw(offsideLine());
+  const off = isOffside();
+  ctx.save();
+  ctx.setLineDash([6,4]);
+  ctx.strokeStyle = off ? 'rgba(255,70,70,.9)' : 'rgba(0,255,159,.85)';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = off ? 'rgba(255,70,70,.5)' : 'rgba(0,255,159,.4)';
+  ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.moveTo(ox, ty); ctx.lineTo(ox, by); ctx.stroke();
+  ctx.restore();
+
+  /* Offside line label */
+  ctx.fillStyle = off ? 'rgba(255,100,100,.8)' : 'rgba(0,255,159,.7)';
+  ctx.font = 'bold 8px "Space Mono", monospace';
+  ctx.fillText('H-J', ox + 4, ty + 18);
+
+  /* Passer → Attacker dashed arrow */
+  ctx.save();
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle = 'rgba(212,168,67,.45)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(px(P.pas), py(P.pas));
+  ctx.lineTo(px(P.att), py(P.att));
+  ctx.stroke();
+  ctx.restore();
+
+  /* Draw players */
+  const R = Math.max(12, Math.min(18, W * .018));
+  Object.values(P).forEach(p => drawPlayer(p, R));
+
+  /* Update verdict */
+  updateVerdict();
 }
 
-function reset(){
-
-players[0].x=250
-players[1].x=350
-players[2].x=600
-
-draw()
-
+function drawPlayer(p, R) {
+  const x = px(p), y = py(p);
+  ctx.save();
+  ctx.shadowColor = p.col;
+  ctx.shadowBlur  = 14;
+  ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI*2);
+  ctx.fillStyle = p.col; ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${Math.max(9,R*.65)}px "Barlow Condensed",sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(p.label, x, y);
+  ctx.restore();
 }
 
-function random(){
+function updateVerdict() {
+  const off = isOffside();
+  const dPx = Math.abs(P.att.x - offsideLine()) * (FIELD.right - FIELD.left) * W;
+  /* Convert pixels to cm: assume field = 105m wide visible in W*(right-left) px */
+  const fieldWidthM = 105;
+  const scale = fieldWidthM * 100 / ((FIELD.right - FIELD.left) * W); /* cm/px */
+  const margCm = (dPx * scale).toFixed(1);
 
-players.forEach(p=>{
-p.x=100+Math.random()*700
-})
+  const box = document.getElementById('res-box');
+  const st  = document.getElementById('res-st');
+  const mg  = document.getElementById('res-mg');
 
-draw()
-
+  if (off) {
+    box.className = 'res-verdict off';
+    st.className  = 'res-status off';
+    st.textContent = '✗ Hors-jeu';
+  } else {
+    box.className = 'res-verdict on';
+    st.className  = 'res-status on';
+    st.textContent = '✓ En jeu';
+  }
+  mg.textContent = `Marge : ${margCm} cm`;
 }
 
-draw()
+/* ── Drag ── */
+let drag = null;
+const HITZONE = 24;
 
+function toField(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  const sx = W / r.width, sy = H / r.height;
+  const cx = (clientX - r.left) * sx;
+  const cy = (clientY - r.top)  * sy;
+  return {
+    x: Math.max(0, Math.min(1, (cx/W - FIELD.left) / (FIELD.right - FIELD.left))),
+    y: Math.max(0, Math.min(1, (cy/H - FIELD.top)  / (FIELD.bottom - FIELD.top))),
+  };
+}
+
+function nearestPlayer(cx, cy) {
+  let best = null, bestD = Infinity;
+  Object.entries(P).forEach(([k, p]) => {
+    const d = Math.hypot(cx - px(p), cy - py(p));
+    if (d < HITZONE && d < bestD) { bestD = d; best = k; }
+  });
+  return best;
+}
+
+canvas.addEventListener('mousedown', e => {
+  const r = canvas.getBoundingClientRect();
+  const sx = W / r.width, sy = H / r.height;
+  drag = nearestPlayer((e.clientX - r.left)*sx, (e.clientY - r.top)*sy);
+});
+window.addEventListener('mousemove', e => {
+  if (!drag) return;
+  const f = toField(e.clientX, e.clientY);
+  P[drag].x = f.x; P[drag].y = f.y;
+  drawPitch();
+});
+window.addEventListener('mouseup', () => { drag = null; });
+
+/* Touch */
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  const r = canvas.getBoundingClientRect();
+  const sx = W / r.width, sy = H / r.height;
+  drag = nearestPlayer((t.clientX - r.left)*sx, (t.clientY - r.top)*sy);
+}, { passive: false });
+window.addEventListener('touchmove', e => {
+  if (!drag) return;
+  e.preventDefault();
+  const f = toField(e.touches[0].clientX, e.touches[0].clientY);
+  P[drag].x = f.x; P[drag].y = f.y;
+  drawPitch();
+}, { passive: false });
+window.addEventListener('touchend', () => { drag = null; });
+
+/* ── Controls ── */
+function resetPos() {
+  P.gk.x=.08;  P.gk.y=.50;
+  P.d1.x=.63;  P.d1.y=.33;
+  P.d2.x=.63;  P.d2.y=.67;
+  P.att.x=.61; P.att.y=.50;
+  P.pas.x=.42; P.pas.y=.56;
+  drawPitch();
+}
+function randPos() {
+  const rx = (a,b) => a + Math.random()*(b-a);
+  P.d1.x  = rx(.45,.75); P.d1.y  = rx(.15,.45);
+  P.d2.x  = rx(.45,.75); P.d2.y  = rx(.55,.85);
+  P.att.x = rx(.40,.78); P.att.y = rx(.20,.80);
+  P.pas.x = rx(.25,.55); P.pas.y = rx(.25,.75);
+  drawPitch();
+}
+
+/* ── Resize ── */
+function resizeCanvas() {
+  W = canvas.offsetWidth;
+  H = 370;
+  canvas.width  = W;
+  canvas.height = H;
+  drawPitch();
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 </script>
-
 </body>
 </html>
