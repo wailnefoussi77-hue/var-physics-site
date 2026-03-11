@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAR & Physique</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>VAR & Physique</h1>
+<p>Quand la physique arbitre le football</p>
+
+<nav>
+<a href="#contexte">Contexte</a>
+<a href="#simulateur">Simulation</a>
+<a href="#physique">Physique</a>
+<a href="#cameras">Caméras</a>
+<a href="#algorithmes">IA</a>
+</nav>
+
+</header>
+
+<section id="hero">
+
+<h2>Mesures Physiques dans le Football Moderne</h2>
+
+<div class="stats">
+
+<div>
+<h3>8+</h3>
+<p>Caméras VAR</p>
+</div>
+
+<div>
+<h3>500 fps</h3>
+<p>Haute vitesse</p>
+</div>
+
+<div>
+<h3>±1.1 cm</h3>
+<p>Précision SAOT</p>
+</div>
+
+<div>
+<h3>29</h3>
+<p>Points anatomiques</p>
+</div>
+
+</div>
+
+</section>
+
+
+<section id="contexte">
+
+<h2>Histoire de la VAR</h2>
+
+<p>
+Depuis les débuts du football, les erreurs arbitrales ont marqué les compétitions.
+La VAR est apparue pour rendre les décisions plus objectives grâce à la science et à la mesure physique.
+</p>
+
+<ul>
+
+<li>2010 — But fantôme Lampard</li>
+<li>2012 — Lancement projet FIFA</li>
+<li>2016 — Tests en championnat</li>
+<li>2018 — Coupe du Monde Russie</li>
+<li>2022 — SAOT et IA</li>
+
+</ul>
+
+</section>
+
+
+
+<section id="simulateur">
+
+<h2>Simulateur de Hors-Jeu</h2>
+
+<p>Déplace les joueurs sur le terrain et observe la décision.</p>
+
+<canvas id="terrain" width="900" height="400"></canvas>
+
+<div class="controls">
+
+<button onclick="resetPlayers()">Réinitialiser</button>
+<button onclick="randomPosition()">Position aléatoire</button>
+
+</div>
+
+<h3 id="verdict"></h3>
+
+</section>
+
+
+
+<section id="physique">
+
+<h2>Physique du ballon</h2>
+
+<div class="cards">
+
+<div class="card">
+<h3>Trajectoire balistique</h3>
+<p>Le ballon subit gravité, traînée aérodynamique et effet Magnus.</p>
+</div>
+
+<div class="card">
+<h3>Effet Magnus</h3>
+<p>Force perpendiculaire au mouvement créée par la rotation du ballon.</p>
+</div>
+
+<div class="card">
+<h3>Incertitude de mesure</h3>
+<p>
+Propagation quadratique :
+u = √(u1² + u2² + u3² + u4²)
+</p>
+</div>
+
+</div>
+
+</section>
+
+
+
+<section id="cameras">
+
+<h2>Réseau de caméras</h2>
+
+<ul>
+
+<li>Broadcast 4K</li>
+<li>Slow motion 1000 fps</li>
+<li>12 caméras SAOT</li>
+<li>Goal Line Technology</li>
+
+</ul>
+
+</section>
+
+
+<section id="algorithmes">
+
+<h2>IA et Vision par ordinateur</h2>
+
+<p>
+
+La VAR utilise plusieurs algorithmes :
+
+</p>
+
+<ul>
+
+<li>YOLO : détection des joueurs</li>
+<li>DeepSORT : suivi</li>
+<li>Kalman Filter : prédiction</li>
+<li>Triangulation SVD : reconstruction 3D</li>
+
+</ul>
+
+</section>
+
+
+<footer>
+
+<p>Projet scientifique – Mesures Physiques</p>
+
+</footer>
+
+<script src="simulator.js"></script>
+
+</body>
+</html>
+
+body{
+font-family:Arial;
+margin:0;
+background:#0f172a;
+color:white;
+}
+
+header{
+background:black;
+padding:20px;
+text-align:center;
+}
+
+nav a{
+margin:10px;
+color:#3b82f6;
+text-decoration:none;
+font-weight:bold;
+}
+
+section{
+padding:60px;
+}
+
+.stats{
+display:flex;
+justify-content:space-around;
+margin-top:40px;
+}
+
+.cards{
+display:flex;
+gap:20px;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+width:30%;
+}
+
+canvas{
+background:#15803d;
+border:3px solid white;
+display:block;
+margin:auto;
+}
+
+.controls{
+text-align:center;
+margin-top:20px;
+}
+
+button{
+padding:10px 20px;
+margin:10px;
+background:#3b82f6;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+footer{
+text-align:center;
+padding:40px;
+background:black;
+}
+
+const canvas = document.getElementById("terrain");
+const ctx = canvas.getContext("2d");
+
+let players = [
+
+{x:200,y:200,type:"def"},
+{x:300,y:180,type:"def"},
+{x:500,y:200,type:"att"}
+
+];
+
+let dragging=null;
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+players.forEach(p=>{
+
+ctx.beginPath();
+
+if(p.type==="att")
+ctx.fillStyle="red";
+else
+ctx.fillStyle="blue";
+
+ctx.arc(p.x,p.y,12,0,Math.PI*2);
+ctx.fill();
+
+});
+
+checkOffside()
+
+}
+
+canvas.onmousedown=(e)=>{
+
+let rect=canvas.getBoundingClientRect();
+
+let x=e.clientX-rect.left;
+let y=e.clientY-rect.top;
+
+players.forEach(p=>{
+
+if(Math.hypot(p.x-x,p.y-y)<15)
+dragging=p
+
+});
+
+};
+
+canvas.onmousemove=(e)=>{
+
+if(dragging){
+
+let rect=canvas.getBoundingClientRect();
+
+dragging.x=e.clientX-rect.left;
+dragging.y=e.clientY-rect.top;
+
+draw()
+
+}
+
+};
+
+canvas.onmouseup=()=> dragging=null;
+
+function checkOffside(){
+
+let defenders=players.filter(p=>p.type==="def")
+
+let line=Math.min(...defenders.map(p=>p.x))
+
+let attacker=players.find(p=>p.type==="att")
+
+let verdict=document.getElementById("verdict")
+
+if(attacker.x < line){
+
+verdict.innerHTML="✔ En jeu"
+
+}else{
+
+verdict.innerHTML="❌ Hors-jeu"
+
+}
+
+ctx.strokeStyle="yellow"
+
+ctx.beginPath()
+ctx.moveTo(line,0)
+ctx.lineTo(line,400)
+ctx.stroke()
+
+}
+
+function resetPlayers(){
+
+players[0].x=200
+players[1].x=300
+players[2].x=500
+
+draw()
+
+}
+
+function randomPosition(){
+
+players.forEach(p=>{
+
+p.x=100+Math.random()*700
+
+})
+
+draw()
+
+}
+
+draw()
+
+
+
+
